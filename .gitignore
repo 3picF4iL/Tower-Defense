@@ -1,0 +1,4 @@
+_bck/*
+__pycache__/*
+*.pyc
+.idea/*
