@@ -1,11 +1,11 @@
 import arcade
 
 
-class DefaultWindow(arcade.Window):
-    def __init__(self, width, height, screen_text, screen_color=arcade.color.AMAZON):
-        super().__init__(width, height, "Tower Defense Game")
-        self.background = screen_color
+class DefaultView(arcade.View):
+    def __init__(self, screen_text, screen_color=arcade.color.AMAZON):
+        super().__init__()
+        arcade.set_background_color(screen_color)
         self.text = screen_text
 
     def on_draw(self):
-        arcade.draw_text(self.text, self.width / 2, self.height / 2, arcade.color.WHITE_SMOKE, 44)
+        arcade.draw_text(self.text, 50, self.window.height / 2, arcade.color.WHITE_SMOKE, 44)

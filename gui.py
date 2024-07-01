@@ -6,6 +6,29 @@ from const import ENEMIES, TOWERS
 GOLD = 100
 
 
+class TextPopup(arcade.Sprite):
+    def __init__(self, x, y, font_size=14, text=""):
+        super().__init__()
+        self.center_x = x
+        self.center_y = y
+
+        self.font_type = "GodOfWar"
+        self.font_size = font_size
+        self.alpha = 255
+        self.text_to_show = ""
+        self.setup(text)
+
+    def setup(self, text):
+        self.text_to_show = text
+
+    def t_draw(self):
+        if self.text_to_show:
+            arcade.draw_text(self.text_to_show,
+                             self.center_x, self.center_y,
+                             arcade.color.BLACK, self.font_size,
+                             font_name=self.font_type)
+
+
 class Popup(arcade.Sprite):
     def __init__(self, x, y, y_shift=40, font_size=14, tower=None):
         super().__init__()
@@ -43,28 +66,30 @@ class Popup(arcade.Sprite):
         super().draw()
         self.draw_text()
 
+
 class GUI:
     def __init__(self, window):
         self.elements = SpriteList()
         self.dragged_element = None
         self.popups = []
+        self.text_popup = None
 
         self.window = None
         self.SCREEN_WIDTH = 0
         self.SCREEN_HEIGHT = 0
-        self.gold = 0
+        self.main_window = window
 
         # Initiate GUI settings
         self._initiate_gui(window)
         # Setup GUI
         self.setup_bottom_gui()
         self.setup_shop_gui()
+        self.text_popup_coords = (self.SCREEN_WIDTH / 2, 40)
 
     def _initiate_gui(self, window):
         self.window = window
-        self.SCREEN_WIDTH = window.width
-        self.SCREEN_HEIGHT = window.height
-        self.gold = window.gold
+        self.SCREEN_WIDTH = window.window.width
+        self.SCREEN_HEIGHT = window.window.height
 
     def setup_shop_gui(self):
         elements = [
@@ -112,7 +137,11 @@ class GUI:
         # Enemies left
         arcade.draw_text(f"Enemies left: {len(self.window.enemy_list)}", 60, 50, arcade.color.BLACK, 15, font_name="GodOfWar")
         # Gold
-        arcade.draw_text(f"Gold: {self.gold}", 60, 30, arcade.color.BLACK, 15, font_name="GodOfWar")
+        arcade.draw_text(f"Gold: {self.main_window.gold}", 60, 30, arcade.color.BLACK, 15, font_name="GodOfWar")
+
+    def show_text_popup(self):
+        if self.text_popup:
+            self.text_popup.t_draw()
 
     def show_dragged_element(self):
         if self.dragged_element is None:
@@ -120,11 +149,22 @@ class GUI:
         self.dragged_element.show_range()
         self.dragged_element.draw()
 
+    def check_if_enough_gold_to_buy_tower(self):
+        for element in self.elements:
+            if isinstance(element, MiniTower):
+                if self.main_window.gold >= element.cost:
+                    element.alpha = 255
+                    element.disabled = False
+                else:
+                    element.alpha = 100
+                    element.disabled = True
+
     def show_tower_popup(self):
         for popup in self.popups:
             popup.draw()
 
     def show_gui_elements(self):
+        self.check_if_enough_gold_to_buy_tower()
         for element in self.elements:
             element.draw()
 
@@ -135,29 +175,42 @@ class GUI:
         self.dragged_element.center_y = self.window.mouse_y
 
     def set_dragged_element(self, element):
-        print("Setting dragged element")
         if not element.disabled:
             self.dragged_element = Tower(element.center_x, element.center_y, element.tower_type)
 
-    def process_item_at_point(self, point):
+    def click_process_item_at_point(self, point):
         temp_list = SpriteList()
         temp_list.extend(self.window.tower_list)
         temp_list.extend(self.elements)
         items = arcade.get_sprites_at_point(point, temp_list)
-        print(f"Item at point: {items}")
         for item in items:
             if isinstance(item, MiniTower):
                 self.set_dragged_element(item)
             elif isinstance(item, Tower):
                 self.setup_tower_popup(tower=item)
 
+    def hover_process_item_at_point(self, point):
+        text = ""
+        temp_list = SpriteList()
+        temp_list.extend(self.window.tower_list)
+        temp_list.extend(self.elements)
+        items = arcade.get_sprites_at_point(point, temp_list)
+        if not items:
+            return
+        for item in items:
+            if isinstance(item, MiniTower):
+                text = f"Cost: {item.cost} gold"
+            if isinstance(item, Tower):
+                text = f"Tower type: {item.tower_type}"
+        self.text_popup = TextPopup(self.text_popup_coords[0], self.text_popup_coords[1], text=text)
+
     def modify_gold(self, value):
-        self.gold += value
+        self.main_window.gold += value
 
     def buy_tower(self):
         if self.dragged_element is not None:
             tower_cost = self.dragged_element.cost
-            if self.gold >= tower_cost:
+            if self.main_window.gold >= tower_cost:
                 self.modify_gold(-tower_cost)
                 self.window.tower_list.append(self.dragged_element)
                 self.dragged_element = None
@@ -170,6 +223,7 @@ class GUI:
         self.show_dragged_element()
         self.show_tower_popup()
         self.show_info()
+        self.show_text_popup()
 
     def update(self):
         self.update_dragged_element()
