@@ -1,12 +1,12 @@
 ENEMIES = {
     "type_1": {
-        "health": 200,
-        "reward": 10,
+        "health": 20,
+        "reward": 15,
         "damage": 10,
         "speed": {
             "movement_treshhold": 0.6,
             "movement_counter": 0,
-            "movement_speed": 5
+            "movement_speed": 10
         },
         "animation_textures": {
             'idle': {
@@ -22,13 +22,13 @@ ENEMIES = {
         }
     },
     "type_2": {
-        "health": 250,
-        "reward": 15,
+        "health": 40,
+        "reward": 25,
         "damage": 15,
         "speed": {
-            "movement_treshhold": 0.4,
+            "movement_treshhold": 1,
             "movement_counter": 0,
-            "movement_speed": 5
+            "movement_speed": 15
         },
         "animation_textures": {
             'idle': {
@@ -44,13 +44,13 @@ ENEMIES = {
         }
     },
     "type_3": {
-        "health": 200,
-        "reward": 20,
+        "health": 120,
+        "reward": 50,
         "damage": 20,
         "speed": {
-            "movement_treshhold": 0.2,
+            "movement_treshhold": 1.2,
             "movement_counter": 0,
-            "movement_speed": 5
+            "movement_speed": 30
         },
         "animation_textures": {
             'idle': {
@@ -69,9 +69,9 @@ ENEMIES = {
 
 TOWERS = {
     "type_1": {
-        "range": 100,
+        "range": 120,
         "damage": 5,
-        "attack_speed": 1,
+        "attack_speed": 0.9,
         "animation_textures": {
             'idle': {
                 'frame_rate': 0,
@@ -84,11 +84,12 @@ TOWERS = {
                 'textures': []
             },
         },
-        "cost": 50
+        "cost": 50,
+        "bullet_speed": 2,
     },
     "type_2": {
-        "range": 150,
-        "damage": 1,
+        "range": 240,
+        "damage": 2,
         "attack_speed": 0.2,
         "animation_textures": {
             'idle': {
@@ -102,25 +103,27 @@ TOWERS = {
                 'textures': []
             },
         },
-        "cost": 100
+        "cost": 100,
+        "bullet_speed": 7,
     },
     "type_3": {
         "range": 200,
-        "damage": 8,
+        "damage": 15,
         "attack_speed": 2,
         "animation_textures": {
             'idle': {
                 'frames_counter': 0,
-                'current_frame': 0,
+                'update_rate': 1,
                 'textures': []
             },
             'attack': {
                 'frames_counter': 0,
-                'current_frame': 0,
+                'update_rate': 10,
                 'textures': []
             },
         },
-        "cost": 150
+        "cost": 150,
+        "bullet_speed": 2,
     },
     "type_4": {
         "range": 250,
@@ -129,16 +132,17 @@ TOWERS = {
         "animation_textures": {
             'idle': {
                 'frames_counter': 0,
-                'current_frame': 0,
+                'update_rate': 1,
                 'textures': []
             },
             'attack': {
                 'frames_counter': 0,
-                'current_frame': 0,
+                'update_rate': 10,
                 'textures': []
             },
         },
-        "cost": 300
+        "cost": 300,
+        "bullet_speed": 10,
     }
 }
 
@@ -160,8 +164,8 @@ MAP_POINTS = {
             [-100, 360],   # 12
         ],
         "enemies": {
-                "TYPE_1": 5,
-                "TYPE_2": 2,
+                "TYPE_1": 10,  # how many
+                "TYPE_2": 5,
                 "TYPE_3": 1,
             },
         "enemies_start_point": [1015, 620],
